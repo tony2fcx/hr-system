@@ -66,31 +66,51 @@ def check_out_service(db, user_id: int):
 def hr_view_all_attendence(db):
     data = get_all_attendance(db)
 
-    return [
-        {
+    result = []
+
+    for row in data:
+
+        if row.check_in:
+            status = "Present"
+        else:
+            status = "Absent"
+
+        result.append({
             "user_id": row.id,
             "name": row.name,
             "role": row.role,
-            "check-in": row.check_in,
-            "check-out": row.check_out,
-            "status": row.status
-        }
-        for row in data
-    ]
+            "check_in": row.check_in,
+            "check_out": row.check_out,
+            "status": status
+        })
+
+    return result
+
+
+
 
 def manager_team_service(db, manager_id: int):
     data = get_team_attendance(db, manager_id)
 
-    return [
-        {
+    result = []
+
+    for row in data:
+
+        if row.check_in:
+            status = "Present"
+        else:
+            status = "Absent"
+
+        result.append({
             "user_id": row.id,
             "name": row.name,
-            "check-in": row.check_in,
-            "check-out": row.check_out,
-            "status": row.status
-        }
-        for row in data
-    ]
+            "role":row.role,
+            "check_in": row.check_in,
+            "check_out": row.check_out,
+            "status": status
+        })
+
+    return result
 
 
 

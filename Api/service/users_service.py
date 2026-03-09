@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from Api.models.users_model import User
 from Api.core.security import hash_password,verify_password,verify_refresh_token,create_access_token,create_refresh_token
 from Api.repository.users_repository import (create_user,get_user_by_email,get_refresh_token,update_refresh_token,delete_refresh_token,
-save_refresh_token,get_users_by_role,get_manager_by_id,get_employees_by_ids,assign_manager_to_employees,get_managers_by_role,get_employees_by_manager)
+save_refresh_token,get_users_by_role,get_manager_by_id,get_employees_by_ids,assign_manager_to_employees,get_managers_by_role,get_employees_by_manager,
+get_user_by_id,update_user,remove_employee_team,delete_team)
 
 
 def register_user(db: Session,name: str,email: str,password: str,role: str,phone: str,profile_image: UploadFile):
@@ -147,7 +148,7 @@ def assign_employees_service(db: Session, data):
 
 
 
-def hr_view_all_teams(db):
+def hr_view_all_teams_service(db):
 
     managers = get_managers_by_role(db)
 
@@ -185,3 +186,72 @@ def user_logout(db: Session, refresh_token: str):
     delete_refresh_token(db, db_token)
 
     return {"message": "User successfully logged out"}
+
+
+
+def update_employee_profile_service(
+    db: Session,
+    user_id: int,
+    profile_data,
+    profile_image: UploadFile | None = None
+):
+    employee = get_user_by_id(db, user_id)
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Update name
+    if profile_data.name is not None:
+        employee.name = profile_data.name
+
+    if profile_data.email is not None:
+        employee.email = profile_data.email
+
+        
+
+    # Update phone
+    if profile_data.phone is not None:
+        employee.phone = profile_data.phone
+
+    # Update Image Properly
+    if profile_image:
+
+        os.makedirs("uploads", exist_ok=True)
+
+        # Delete old image if exists
+        if employee.profile_image and os.path.exists(employee.profile_image):
+            os.remove(employee.profile_image)
+
+        file_extension = profile_image.filename.split(".")[-1]
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        file_path = f"uploads/{unique_filename}"
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(profile_image.file, buffer)
+
+        employee.profile_image = file_path
+
+    return update_user(db, employee)
+
+
+
+
+def remove_employee_team_service(employee_id: int, db):
+
+    employee = remove_employee_team(db, employee_id)
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    return {"message": "Employee removed from team"}
+
+
+
+def delete_full_team(manager_id: int, db):
+
+    employees = delete_team(db, manager_id)
+
+    return {
+        "message": "Team deleted successfully",
+        "employees_updated": len(employees)
+    }

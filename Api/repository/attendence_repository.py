@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func,and_
 from datetime import date
 from Api.models.users_model import User
 from Api.models.attendence_model import Attendance
@@ -34,25 +34,52 @@ def update_checkin(db: Session, attendance: Attendance):
 
 # HR → Get all attendance
 def get_all_attendance(db: Session):
-    return db.query(
-        User.id,
-        User.name,
-        User.role,
-        Attendance.check_in,
-        Attendance.check_out,
-        Attendance.status
-    ).join(Attendance, Attendance.user_id == User.id).all()
+
+    today = date.today()
+
+    return (
+        db.query(
+            User.id,
+            User.name,
+            User.role,
+            Attendance.check_in,
+            Attendance.check_out
+        )
+        .outerjoin(
+            Attendance,
+            and_(
+                Attendance.user_id == User.id,
+                func.date(Attendance.check_in) == today
+            )
+        )
+        .filter(User.role.in_(["employee", "manager"]), User.is_active == True)
+        .all()
+    )
 
 
 # Manager → Team attendance
-def get_team_attendance(db: Session, manager_id: int):
-    return db.query(
-        User.id,
-        User.name,
-        Attendance.check_in,
-        Attendance.check_out,
-        Attendance.status
-    ).join(Attendance, Attendance.user_id == User.id)\
-     .filter(User.manager_id == manager_id)\
-     .all()
+def get_team_attendance(db, manager_id):
+
+    today = date.today()
+
+    data = (
+        db.query(
+            User.id,
+            User.name,
+            User.role,
+            Attendance.check_in,
+            Attendance.check_out
+        )
+        .outerjoin(
+            Attendance,
+            and_(
+                Attendance.user_id == User.id,
+                func.date(Attendance.check_in) == today
+            )
+        )
+        .filter(User.manager_id == manager_id, User.is_active == True)
+        .all()
+    )
+
+    return data
 

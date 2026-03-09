@@ -83,7 +83,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     }
 
 
-
 def require_role(required_roles):
     def role_checker(current_user: dict = Depends(get_current_user)):
 

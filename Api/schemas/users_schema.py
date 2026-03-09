@@ -1,11 +1,12 @@
 from pydantic import BaseModel, EmailStr,field_validator
+from typing import Optional
 import re
 
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: str  # only HR can set manager/employee
+    role: str  
     phone: str
     profile_image: str
 
@@ -24,8 +25,7 @@ class UserCreate(BaseModel):
         
         if not any(c.islower() for c in value):
             raise ValueError("Password must contain one lowercase letter")
-        
-         #Special character check
+    
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
             raise ValueError("Password must contain at least one special character")
 
@@ -33,7 +33,6 @@ class UserCreate(BaseModel):
         return value
     
 
-    #phn validation
     @field_validator("phone")
     @classmethod 
     def validate_phone(cls, value): 
@@ -43,9 +42,9 @@ class UserCreate(BaseModel):
         return value
          
          
-    #image validation
+   
     @field_validator("profile_image") 
-    @classmethod #Required decorator for Pydantic v2 validators.
+    @classmethod 
     def validate_image(cls, value): 
         allowed_extensions = (".jpg", ".jpeg", ".png")
         if not value.lower().endswith(allowed_extensions): 
@@ -67,11 +66,19 @@ class UserResponse(BaseModel):
     profile_image: str
     created_at: str
 
-    class Config:    #it convert object to json
+    class Config:    
         from_attributes = True
       
  
 class AssignEmployees(BaseModel):
     manager_id: int
     employee_ids: list[int]
-    
+
+
+class EmployeeProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None 
+    email: Optional[str] = None
+
+class RefreshSchema(BaseModel):
+    refresh_token: str    
