@@ -22,8 +22,6 @@ def create_task(
 
 
 
-
-#  Manager Update Task
 @router.put("/update/{task_id}")
 def update_task(
     task_id: int,
@@ -34,7 +32,6 @@ def update_task(
     return update_task_service(db, task_id, task_data, current_user)
 
 
-#  Manager Delete Task
 @router.delete("/delete/{task_id}")
 def delete_task(
     task_id: int,

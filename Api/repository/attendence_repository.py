@@ -30,9 +30,7 @@ def update_checkin(db: Session, attendance: Attendance):
     db.refresh(attendance)
     return attendance
 
-#ATTENDANCE REPORT
 
-# HR → Get all attendance
 def get_all_attendance(db: Session):
 
     today = date.today()
@@ -57,7 +55,6 @@ def get_all_attendance(db: Session):
     )
 
 
-# Manager → Team attendance
 def get_team_attendance(db, manager_id):
 
     today = date.today()

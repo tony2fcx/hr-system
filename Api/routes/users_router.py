@@ -6,7 +6,6 @@ from Api.service.users_service import (register_user,authenticate_user,refresh_u
 user_logout,get_all_managers_service,get_all_employees_service,assign_employees_service,hr_view_all_teams_service,
 update_employee_profile_service,remove_employee_team_service,delete_full_team)
 
-
 from pydantic import ValidationError
 from Api.core.security import require_role,get_current_user
 from Api.models.users_model import User
@@ -24,7 +23,6 @@ async def hr_register(
     db: Session = Depends(get_db)
 ):
 
-   
     try:
         user_data = UserCreate(
             name=name,
@@ -111,7 +109,6 @@ async def employee_register(
     current_user = Depends(require_role("hr"))
 ):
 
-   
     try:
         user_data = UserCreate(
             name=name,
@@ -176,7 +173,6 @@ def get_my_employees(
     return db.query(User).filter(
         User.manager_id == current_user["user_id"]
     ).all()
-
 
 @router.get("/own-profiles")
 def get_my_profile(

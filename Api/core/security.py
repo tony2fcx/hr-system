@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
-REFRESH_TOKEN_LIFETIME = 7 #7 days
+REFRESH_TOKEN_LIFETIME = 7 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -49,8 +49,6 @@ def verify_refresh_token(token: str):
     return None
 
 
-# GET CURRENT USER / AGENT
-
 def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = verify_token(token)
 
@@ -60,8 +58,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Security: Ensure an attacker doesn't use a refresh_token as an access_token
     if payload.get("type") == "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -86,7 +82,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 def require_role(required_roles):
     def role_checker(current_user: dict = Depends(get_current_user)):
 
-        # If single string → convert to list
         if isinstance(required_roles, str):
             roles = [required_roles.lower()]
         else:

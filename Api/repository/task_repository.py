@@ -30,6 +30,11 @@ def get_task_by_id(db: Session, task_id: int):
     return db.query(Task).filter(Task.id == task_id).first()
 
 
+def get_manager_employees(db: Session, manager_id: int):
+    return db.query(User).filter(
+        User.manager_id == manager_id
+    ).all()
+
 def update_task_fields(db: Session, task: Task):
     db.commit()
     db.refresh(task)
@@ -37,6 +42,12 @@ def update_task_fields(db: Session, task: Task):
 
 
 def delete_task(db: Session, task: Task):
+
+    db.query(TaskAssignment).filter(
+        TaskAssignment.task_id == task.id
+    ).delete()
+
+    
     db.delete(task)
     db.commit()
     return True

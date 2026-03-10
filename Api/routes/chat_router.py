@@ -22,24 +22,19 @@ async def chat_socket(
         while True:
 
             data = await websocket.receive_text()
-
-            # 1️⃣ Save chat message
             store_message_service(db, manager_id, user_id, data)
-
-            # 2️⃣ Create notification in DB
             employees = db.query(User).filter(
                 User.manager_id == manager_id
             ).all()
 
             for emp in employees:
-                if emp.id != user_id:  # don't notify sender
+                if emp.id != user_id:  
                     create_notification_service(
                         db,
                         emp.id,
                         f"New message from user {user_id}"
                     )
 
-            # 3️⃣ Send chat message to sender
             await manager.send_to_sender(
                 websocket,
                 {
@@ -49,7 +44,6 @@ async def chat_socket(
                 }
             )
 
-            # 4️⃣ Send chat message to others
             await manager.broadcast(
                 manager_id,
                 {
@@ -60,7 +54,6 @@ async def chat_socket(
                 exclude=websocket
             )
 
-            # 5️⃣ Send notification only to others
             await manager.broadcast(
                 manager_id,
                 {

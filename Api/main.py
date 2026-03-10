@@ -15,14 +15,13 @@ from fastapi.staticfiles import StaticFiles
 
 app=FastAPI()
 
-Base.metadata.create_all(bind=engine)  #for automatic table creation
-# print(Base.metadata.tables.keys())
+Base.metadata.create_all(bind=engine)  
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all for testing
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"], 

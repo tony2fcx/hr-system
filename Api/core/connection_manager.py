@@ -34,7 +34,7 @@ class ConnectionManager:
 
         for connection in connections:
 
-            # Skip sender websocket
+           
             if connection == exclude:
                 continue
 

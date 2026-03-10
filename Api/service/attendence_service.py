@@ -17,11 +17,10 @@ def check_in_service(db, user_id: int):
             detail="Already checked in"
         )
 
-    # If not exists → create default record
     if not attendance:
         attendance = create_attendance(db, user_id)
 
-    # Common logic (single place)
+  
     attendance.check_in = datetime.now()
     attendance.status = "Present"
 
@@ -61,7 +60,7 @@ def check_out_service(db, user_id: int):
         "time": attendance.check_out
     }
 
-#ATTENDANCE REPORT SERVICES
+
 
 def hr_view_all_attendence(db):
     data = get_all_attendance(db)

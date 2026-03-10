@@ -13,7 +13,6 @@ class TaskStatus(str,Enum):
 class Taskcreate(BaseModel):
     title:str
     description:str
-    assigned_to:list[int]
     deadline:date
 
 class Taskresponse(BaseModel):
@@ -24,6 +23,7 @@ class Taskresponse(BaseModel):
     assigned_by:int
     deadline:date
     status:TaskStatus
+    created_at:datetime
     
     class Config:
         from_attributes = True

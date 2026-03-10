@@ -13,10 +13,8 @@ class User(Base):
     role = Column(String(20), nullable=False)  
     phone = Column(String(20), nullable=True)
     profile_image = Column(String(255), nullable=True)
-   
     created_at = Column(DateTime, server_default=func.now())
     manager_id = Column(Integer, ForeignKey("users.id"), nullable=True) 
     is_active = Column(Boolean, default=True)
-
     user_refresh_token = relationship("UserRefreshToken", back_populates="user") 
     manager = relationship("User", remote_side=[id], backref="employees")

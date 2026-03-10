@@ -8,14 +8,14 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine      #session use engine to talk database
+    bind=engine      
 )
 
-Base = declarative_base()  #parent class for tables
+Base = declarative_base()  
 
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
-        db.close()     #close the connection
+        db.close()    

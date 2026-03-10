@@ -5,40 +5,57 @@ from Api.models.task_model import Task
 from Api.models.task_assignment_model import TaskAssignment
 from Api.models.users_model import User
 from Api.schemas.task_schema import Taskcreate,TaskUpdate
-from Api.repository.task_repository import create_task,get_task_by_id,update_task_fields,delete_task,update_task_status,assign_task_to_employees,get_employees_by_ids
+from Api.repository.task_repository import create_task, get_manager_employees,get_task_by_id,update_task_fields,delete_task,update_task_status,assign_task_to_employees
 
-def create_task_service(db: Session, task_data: Taskcreate, current_user: dict):
 
+def create_task_service(db: Session, task_data, current_user: dict):
+
+   
     if current_user["role"] != "manager":
-        raise HTTPException(status_code=403, detail="Only manager can assign tasks")
+        raise HTTPException(
+            status_code=403,
+            detail="Only manager can assign tasks"
+        )
 
-    employees = get_employees_by_ids(db, task_data.assigned_to)
+    manager_id = current_user["user_id"]
+
+    
+    employees = get_manager_employees(db, manager_id)
 
     if not employees:
-        raise HTTPException(status_code=404, detail="Employee not found")
-
-    for emp in employees:
-        if emp.manager_id != current_user["user_id"]:
-            raise HTTPException(
-                status_code=403,
-                detail="Employee not under this manager"
-            )
+        raise HTTPException(
+            status_code=404,
+            detail="No employees found under this manager"
+        )
 
     task = Task(
         title=task_data.title,
         description=task_data.description,
-        assigned_by=current_user["user_id"],
+        assigned_by=manager_id,
         deadline=task_data.deadline
     )
 
     task = create_task(db, task)
 
-    assign_task_to_employees(db, task.id, task_data.assigned_to)
+  
+    employee_ids = [emp.id for emp in employees]
 
-    return {"message": "Task created successfully"}
+    
+    assign_task_to_employees(db, task.id, employee_ids)
+
+   
+    return {
+        "task_id": task.id,
+        "title": task.title,
+        "description": task.description,
+        "assigned_by": task.assigned_by,
+        "assigned_to": employee_ids,
+        "deadline": task.deadline,
+        "status": task.status,
+        "created_at": task.created_at
+    }
 
 
-#update task
 def update_task_service(
     db: Session,
     task_id: int,
@@ -50,11 +67,11 @@ def update_task_service(
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Only manager who created the task can update
+
     if task.assigned_by != current_user["user_id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    # Update only provided fields
+  
     if task_data.title is not None:
         task.title = task_data.title
 
@@ -66,7 +83,7 @@ def update_task_service(
 
     return update_task_fields(db, task)
 
-#delete task
+
 def delete_task_service(
     db: Session,
     task_id: int,
@@ -126,7 +143,8 @@ def get_tasks_by_role_service(db: Session, current_user: dict):
             "assigned_by": task.assigned_by,
             "assigned_to": employee_ids,
             "deadline": task.deadline,
-            "status": task.status
+            "status": task.status,
+            "created_at": task.created_at
         })
 
     return response
@@ -139,7 +157,6 @@ def update_task_status_service(db: Session, task_id: int, status: str):
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Business logic
     task.status = status
     task.updated_at = datetime.utcnow()
 

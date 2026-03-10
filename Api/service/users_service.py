@@ -12,23 +12,20 @@ get_user_by_id,update_user,remove_employee_team,delete_team)
 
 def register_user(db: Session,name: str,email: str,password: str,role: str,phone: str,profile_image: UploadFile):
 
-        # Check email
         if get_user_by_email(db, email):
             raise HTTPException(status_code=400, detail="Email already exists")
 
-        # Create uploads folder
+       
         os.makedirs("uploads", exist_ok=True)
 
-        # Generate unique filename
         file_extension = profile_image.filename.split(".")[-1]
         unique_filename = f"{uuid.uuid4()}.{file_extension}"
         file_path = f"uploads/{unique_filename}"
 
-        # Save image
+  
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(profile_image.file, buffer)
 
-        # Create model object
         user = User(
             name=name,
             email=email,
@@ -38,7 +35,7 @@ def register_user(db: Session,name: str,email: str,password: str,role: str,phone
             profile_image=file_path
         )
 
-        # Call repository
+     
         return create_user(db, user)
 
 
@@ -66,7 +63,7 @@ def authenticate_user(db: Session, email: str, password: str):
         }
     )
 
-    # ✅ rename repo function to avoid conflict
+
     save_refresh_token(db, user.id, refresh_token)
 
     return {
@@ -131,7 +128,6 @@ def get_all_employees_service(db: Session):
 
 
 def assign_employees_service(db: Session, data):
-
     manager = get_manager_by_id(db, data.manager_id)
 
     if not manager:
@@ -149,7 +145,6 @@ def assign_employees_service(db: Session, data):
 
 
 def hr_view_all_teams_service(db):
-
     managers = get_managers_by_role(db)
 
     result = []
@@ -200,25 +195,22 @@ def update_employee_profile_service(
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    # Update name
+
     if profile_data.name is not None:
         employee.name = profile_data.name
 
     if profile_data.email is not None:
         employee.email = profile_data.email
 
-        
-
-    # Update phone
     if profile_data.phone is not None:
         employee.phone = profile_data.phone
 
-    # Update Image Properly
+   
     if profile_image:
 
         os.makedirs("uploads", exist_ok=True)
 
-        # Delete old image if exists
+        
         if employee.profile_image and os.path.exists(employee.profile_image):
             os.remove(employee.profile_image)
 

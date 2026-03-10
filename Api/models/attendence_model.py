@@ -8,4 +8,4 @@ class Attendance(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     check_in = Column(DateTime, nullable=True)
     check_out = Column(DateTime, nullable=True)
-    status = Column(String(50), default="Absent")  # default absent
+    status = Column(String(50), default="Absent")  

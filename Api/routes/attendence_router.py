@@ -15,7 +15,6 @@ def check_in(
     return check_in_service(db, current_user["user_id"])
 
 
-
 @router.post("/check-out")
 def check_out(
     db: Session = Depends(get_db),
@@ -25,8 +24,6 @@ def check_out(
       return check_out_service(db, current_user["user_id"])
   
   
-#ATTENDANCE REPORT 
-# HR → View all
 @router.get("/hr/all")
 def hr_view_all(
     db: Session = Depends(get_db),
@@ -35,17 +32,12 @@ def hr_view_all(
     return hr_view_all_attendence(db)
 
 
-#view team attendenc only for managers  
-# Manager → Team
 @router.get("/manager/team")
 def manager_team(
     db: Session = Depends(get_db),
     current_user = Depends(require_role(["manager"]))
 ):
     return manager_team_service(db, current_user["user_id"])
-
-
-
 
 
 @router.get("/today")

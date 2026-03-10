@@ -16,10 +16,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     title = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-
-    # Foreign Keys
-    
+    description = Column(Text, nullable=True) 
     assigned_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     deadline = Column(Date, nullable=False)
     status = Column(Enum(TaskStatus), default=TaskStatus.PENDING)

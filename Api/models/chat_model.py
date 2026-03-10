@@ -7,9 +7,7 @@ class ChatMessage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    manager_id = Column(Integer, ForeignKey("users.id"))   # team manager
-    sender_id = Column(Integer, ForeignKey("users.id"))    # who sent message
-
+    manager_id = Column(Integer, ForeignKey("users.id"))   
+    sender_id = Column(Integer, ForeignKey("users.id"))    
     message = Column(String(500))
-
     created_at = Column(DateTime, default=datetime.utcnow)
