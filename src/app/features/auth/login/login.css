@@ -1,0 +1,39 @@
+
+.login-wrapper {
+  background: url("/images/loginbackground.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+.login-card {
+  width: 850px;
+  max-width: 95%;
+  min-height: 500px;
+}
+
+.left-section {
+  background: #024205;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.login-btn {
+  transition: 0.3s ease;
+  background: #9dd10f;
+  color: white;
+  border: #9dd10f;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 128, 0, 0.2);
+}
+
+.tick{
+    background: #9dd10f;
+}
+
+.alert {
+  transition: opacity 0.3s ease-in-out;
+}

@@ -1,0 +1,225 @@
+<div class="dashboard-container d-flex page-enter">
+
+  <aside class="sidebar" [class.open]="!sidebarOpen">
+
+    <button class="menu-btn text-white" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <h4 class="logo">
+      <i class="bi bi-speedometer2 me-2"></i> HR Panel
+    </h4>
+
+    <ul class="nav flex-column mt-4">
+
+      <li class="nav-item">
+        <a routerLink="/dashboard/hr" routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact:true}" class="nav-link">
+          <i class="bi bi-house-door"></i>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/managers" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-plus"></i>
+          Managers
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/employees" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-add"></i>
+          Employees
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/register" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-people"></i>
+          Profile Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/assign-employees" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-gear"></i>
+          Team Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/attendance/hr/all" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-receipt-cutoff"></i>
+          Attendance
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+
+  <div class="main-content flex-fill">
+
+    <nav class="navbar">
+
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <span class="fw-bold text-success fs-5">
+        Welcome HR
+      </span>
+
+      <div class="nav-right">
+
+        <img
+          *ngIf="profile()"
+          [src]="'http://127.0.0.1:8000/' + profile().profile_image"
+          class="profile-img"
+          routerLink="/hr/profile"
+        />
+
+        <i *ngIf="!profile()" class="bi bi-person-circle default-user"></i>
+
+        <button class="btn btn-danger btn-sm" (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    </nav>
+
+
+    <div class="content-area">
+
+      <div class="register-card card shadow border-0">
+        <div class="card-body p-4 p-md-5">
+
+          <h3 class="text-center mb-4 fw-bold text-success">
+            <i class="bi bi-people me-2"></i>
+            Profile Creation
+          </h3>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+
+            <div class="mb-3 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-person"></i>
+              </span>
+
+              <input type="text"
+                     class="form-control"
+                     placeholder="Full Name"
+                     formControlName="name">
+            </div>
+
+            
+            <div class="mb-3 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-envelope"></i>
+              </span>
+
+              <input type="email"
+                     class="form-control"
+                     placeholder="Email Address"
+                     formControlName="email">
+            </div>
+
+            
+            <div class="mb-3 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-briefcase"></i>
+              </span>
+
+              <select class="form-select"
+                      formControlName="role">
+                <option value="">Select Role</option>
+                <option value="hr">HR</option>
+                <option value="manager">Manager</option>
+                <option value="employee">Employee</option>
+              </select>
+            </div>
+
+            
+            <div class="mb-3 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-telephone"></i>
+              </span>
+
+              <input type="text"
+                     class="form-control"
+                     placeholder="Phone Number"
+                     formControlName="phone">
+            </div>
+
+            
+            <div class="mb-3 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-lock"></i>
+              </span>
+
+              <input type="password"
+                    [type]="showPassword ? 'text' : 'password'"
+                     class="form-control"
+                     placeholder="Password"
+                     formControlName="password">
+
+              <span class="input-group-text bg-light cursor-pointer" (click)="togglePassword()">
+                <li class="bi"
+                    [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'">
+                </li>
+              </span>
+            </div>
+
+          
+            <div class="mb-4 input-group">
+              <span class="input-group-text">
+                <i class="bi bi-image"></i>
+              </span>
+
+              <input type="file"
+                     class="form-control"
+                     (change)="onFilechange($event)">
+            </div>
+
+            
+            <button class="btn btn-success w-100 py-2"
+                    type="submit"
+                    [disabled]="loading">
+
+              <span *ngIf="!loading">
+                <i class="bi bi-person-check me-2"></i>
+                Register
+              </span>
+
+              <span *ngIf="loading">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Processing...
+              </span>
+
+            </button>
+
+            
+            <div *ngIf="showError"
+                 class="alert alert-danger mt-3 text-center small">
+              {{ errorMessage }}
+            </div>
+
+            
+            <div *ngIf="successMessage"
+                 class="alert alert-success mt-3 text-center small">
+              {{ successMessage }}
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

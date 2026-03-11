@@ -1,0 +1,363 @@
+<div class="dashboard-wrapper">
+
+  
+  <aside class="sidebar" [class.closed]="!sidebarOpen">
+
+    <button class="menu-btn text-white" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
+
+    <h4 class="logo">
+      <i class="bi bi-speedometer2 me-2"></i> HR Panel
+    </h4>
+
+    <ul class="nav flex-column mt-4">
+
+      <li class="nav-item">
+        <a routerLink="/dashboard/hr"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}"
+           class="nav-link">
+          <i class="bi bi-house-door"></i>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/managers"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-person-plus"></i>
+          Managers
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/employees"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-person-add"></i>
+          Employees
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/register"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-people"></i>
+          Profile Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/assign-employees"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-person-gear"></i>
+          Team Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/attendance/hr/all"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-receipt-cutoff"></i>
+          Attendance
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+
+  
+  <div class="main-section">
+
+    
+    <nav class="navbar">
+
+      
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <span class="fw-bold text-success fs-5">
+        Welcome HR
+      </span>
+
+      <div class="nav-right">
+
+        <img
+          *ngIf="profile()"
+          [src]="'http://127.0.0.1:8000/' + profile().profile_image"
+          class="profile-img"
+          routerLink="/hr/profile"
+        />
+
+        <i *ngIf="!profile()" class="bi bi-person-circle default-user"></i>
+
+        <button class="btn btn-danger btn-sm" (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    </nav>
+
+
+    
+    <div class="content-wrapper page-enter">
+
+      <div class="container-fluid">
+
+      
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+          <h4 class="fw-bold mb-2 mb-md-0">
+            <i class="bi bi-diagram-3-fill text-primary me-2"></i>
+            Team Creation to Manager
+          </h4>
+        </div>
+
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+          <div class="card-body">
+
+            <label class="form-label fw-semibold">
+              <i class="bi bi-person-badge me-2 text-secondary"></i>
+              Select Manager
+            </label>
+
+            <select class="form-select"
+            [ngModel]="selectedManager()"
+            (ngModelChange)="selectedManager.set($event)">
+
+              <option value="">Choose Manager</option>
+
+              @for (manager of managers(); track manager.id) {
+
+                <option [value]="manager.id">
+                  {{ manager.name }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+          <div class="card-body">
+
+            <label class="form-label fw-semibold mb-3">
+              <i class="bi bi-people-fill me-2 text-secondary"></i>
+              Select Employees
+            </label>
+
+            <div class="row g-3">
+
+              @for (emp of employees(); track emp.id) {
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+
+                  <div class="employee-item">
+
+                    <div class="form-check d-flex align-items-center">
+
+                      <input class="form-check-input me-2 p-2"
+                        type="checkbox"
+                       [checked]="selectedEmployees().includes(emp.id)"
+                       (change)="toggleEmployee(emp.id)">
+
+                      <label class="form-check-label">
+                        {{ emp.name }}
+                      </label>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        
+
+        <div class="d-flex justify-content-end mb-3">
+
+          <button class="btn btn-warning text-white px-4 py-2"
+                  (click)="assign()">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Assign
+
+          </button>
+
+        </div>
+
+
+        @if (message()) {
+
+          <div class="mb-4">
+
+            <div class="alert"
+                 [ngClass]="{
+                 'alert-success': message().includes('successfully'),
+                 'alert-danger': message().includes('failed')
+                 }">
+
+              {{ message() }}
+
+            </div>
+
+          </div>
+
+        }
+
+
+
+        <div class="card shadow-lg border-0 rounded-4 mt-4 teams-card">
+
+          <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+
+              <h5 class="fw-bold mb-2 mb-md-0">
+                <i class="bi bi-people-fill me-2 text-primary"></i>
+                All Teams List
+              </h5>
+
+              <span class="badge bg-primary-subtle text-primary px-3 py-2">
+                <i class="bi bi-diagram-3 me-1"></i>
+                {{ teams().length }} Teams
+              </span>
+
+            </div>
+
+
+            @if (teams().length > 0) {
+
+              <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                  <thead class="table-light">
+
+                    <tr>
+                      <th>Manager</th>
+                      <th>Team Members</th>
+                      <th>Action</th>
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                    @for (team of teams(); track team.manager_id) {
+
+                      <tr>
+
+                        <td>
+
+                          <strong>
+                            {{ team.manager_name }}
+                          </strong>
+
+                          <br>
+
+                          <small class="text-muted">
+                            ID : {{ team.manager_id }}
+                          </small>
+
+                        </td>
+
+                        <td>
+
+                          @for (emp of team.team_members; track emp.employee_id) {
+
+                            <span class="badge bg-primary me-2 mb-2">
+
+                              {{ emp.employee_name }}
+
+                              <button
+                                class="btn btn-danger btn-sm ms-2"
+                                
+                                (click)="deleteTeamEmployee(emp.employee_id)">
+                                
+                                <i class="bi bi-trash"></i> 
+                                
+                              </button>
+
+                            </span>
+
+                          }
+
+                        </td>
+
+                        <td>
+
+                          <button
+                            class="btn btn-danger btn-sm"
+                            (click)="deleteTeam(team.manager_id)">
+
+                            <i class="bi bi-trash"></i>
+                            Remove Team
+
+                          </button>
+
+                        </td>
+
+                      </tr>
+
+                    }
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            }
+
+            @else {
+
+              <div class="text-center py-5">
+
+                <i class="bi bi-diagram-3 display-4 text-muted"></i>
+
+                <p class="text-muted mt-3">
+                  No teams created yet
+                </p>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

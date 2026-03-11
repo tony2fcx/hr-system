@@ -1,0 +1,213 @@
+<div class="dashboard-container">
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+
+    <button class="menu-btn text-white" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <h4 class="logo">
+      <i class="bi bi-speedometer2 me-2"></i> HR Panel
+    </h4>
+
+    <ul class="nav flex-column mt-4">
+
+      <li class="nav-item">
+        <a routerLink="/dashboard/hr" routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact:true}" class="nav-link">
+          <i class="bi bi-house-door"></i>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/managers" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-plus"></i>
+          Managers
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/employees" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-add"></i>
+          Employees
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/register" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-people"></i>
+          Profile Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/auth/assign-employees" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-gear"></i>
+          Team Creation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/attendance/hr/all" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-receipt-cutoff"></i>
+          Attendance
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+  
+  <main class="main-content" [class.expand]="!sidebarOpen">
+
+    
+    <nav class="navbar">
+
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <span class="fw-bold text-success fs-5">
+        Welcome HR
+      </span>
+
+      <div class="nav-right">
+
+        <img
+          *ngIf="profile()"
+          [src]="'http://127.0.0.1:8000/' + profile().profile_image"
+          class="profile-img"
+          routerLink="/hr/profile"
+        />
+
+        <i *ngIf="!profile()" class="bi bi-person-circle default-user"></i>
+
+        <button class="btn btn-danger btn-sm" (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    </nav>
+
+    
+    <div class="content-wrapper">
+
+      <div class="card dashboard-card">
+
+        <div class="card-header bg-success text-white d-flex justify-content-between">
+
+          <div>
+            <i class="bi bi-person-badge me-2"></i>
+            Managers List
+          </div>
+
+          <input
+            type="text"
+            class="form-control form-control-sm search-input"
+            placeholder="Search manager..."
+            (input)="onSearch($event)"
+          />
+
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th width="120">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (m of managers(); track m.id) {
+
+                <tr>
+
+                  <td class="fw-semibold">{{m.name}}</td>
+                  <td>{{m.email}}</td>
+                  <td>{{m.phone}}</td>
+
+
+                  <td>
+
+                    <button
+                      class="btn btn-warning text-white btn-sm me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#viewManagerModal"
+                      (click)="viewManager(m)"
+                    >
+                      <i class="bi bi-eye"></i>
+                    </button>
+
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="deleteManager(m.id)"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<div class="modal fade custom-modal" id="viewManagerModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-person-badge me-2"></i>
+          Manager Details
+        </h5>
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body animated-modal"
+           *ngIf="selectedManager() as manager">
+
+        <div class="text-center mb-3">
+          <img
+            [src]="'http://127.0.0.1:8000/' + manager.profile_image"
+            class="rounded-circle modal-profile-img"
+            alt="Profile">
+        </div>
+
+        <p><strong>Name:</strong> {{ manager.name }}</p>
+        <p><strong>Email:</strong> {{ manager.email }}</p>
+        <p><strong>Phone:</strong> {{ manager.phone }}</p>
+        <p><strong>Role:</strong> {{ manager.role }}</p>
+
+      </div>
+
+    </div>
+  </div>
+</div>

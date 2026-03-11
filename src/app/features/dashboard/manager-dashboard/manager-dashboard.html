@@ -1,0 +1,187 @@
+<div class="dashboard-container">
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+
+    <button class="menu-btn text-white" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <h4 class="logo">
+      <i class="bi bi-speedometer2"></i> Manager Panel
+    </h4>
+
+    <ul class="nav flex-column mt-4">
+
+      <li class="nav-item">
+        <a routerLink="/dashboard/manager"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}"
+           class="nav-link">
+          <i class="bi bi-house-door"></i>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/manager/tasks" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-receipt-cutoff"></i>
+          View Tasks
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/manager/mark-attendance" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-calendar-check"></i>
+          Mark Attendance
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a routerLink="/manager/team" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-card-checklist"></i>
+          Team Attendance
+        </a>
+      </li>
+
+
+      <li class="nav-item">
+        <a routerLink="/my-employees" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-microsoft-teams"></i>
+          Our Teams
+        </a>
+      </li>
+
+    </ul>
+
+  </aside>
+
+
+  <div class="main-content">
+
+    <nav class="navbar">
+
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <span class="fw-bold text-success fs-5">
+        Welcome Manager
+      </span>
+
+      <div class="nav-right">
+
+        <img
+          *ngIf="profile()"
+          [src]="'http://127.0.0.1:8000/' + profile().profile_image"
+          class="profile-img"
+          routerLink="/manager/profile"
+        />
+
+        <i *ngIf="!profile()" class="bi bi-person-circle default-user"></i>
+
+        <button class="btn btn-danger btn-sm" (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+
+    </nav>
+
+
+
+    <div class="content-wrapper container-fluid">
+
+      <div class="row g-4">
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card dashboard-card text-center">
+            <i class="bi bi-people"></i>
+            <h5>Total Employees</h5>
+            <h2>{{ totalEmployees() }}</h2>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card dashboard-card bg-success text-white text-center">
+            <i class="bi bi-check-circle"></i>
+            <h5>Present</h5>
+            <h2>{{ presentCount() }}</h2>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card dashboard-card bg-danger text-white text-center">
+            <i class="bi bi-x-circle"></i>
+            <h5>Absent</h5>
+            <h2>{{ absentCount() }}</h2>
+          </div>
+        </div>
+
+
+
+        <div class="col-lg-4 col-md-6">
+          <div class="card dashboard-card bg-primary text-white text-center">
+
+            <i class="bi bi-pie-chart"></i>
+
+            <h5>Attendance %</h5>
+
+            <h2>{{ attendancePercentage() }}%</h2>
+
+            <div class="progress mt-2">
+
+              <div 
+                class="progress-bar bg-light"
+                [style.width.%]="attendancePercentage()">
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      
+
+
+      <div class="row mt-4 g-4">
+
+        <div class="col-lg-6">
+          <div class="card shadow border-0 h-100">
+
+            <div class="card-header bg-white fw-bold">
+              <i class="bi bi-bar-chart"></i>
+              Task Status Overview
+            </div>
+
+            <div class="card-body">
+              <canvas id="taskChart"></canvas>
+            </div>
+
+          </div>
+        </div>
+
+        
+        <div class="col-lg-6">
+          <div class="card shadow border-0 h-100">
+
+            <div class="card-header bg-white fw-bold">
+              <i class="bi bi-pie-chart"></i>
+              Attendance Overview
+            </div>
+
+            <div class="card-body">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
